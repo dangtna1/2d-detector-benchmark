@@ -1,0 +1,12 @@
+dataset: coco128.yaml
+imgsz: 640
+epochs: 50
+batch: 16
+device: null
+seed: 42
+project: runs/benchmarks
+name: coco128
+models:
+  - yolov8n.pt
+  - yolo11n.pt
+notes: "Baseline benchmark settings for YOLOv8 vs YOLOv11"
