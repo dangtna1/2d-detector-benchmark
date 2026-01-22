@@ -1,11 +1,11 @@
-dataset: coco128.yaml
+dataset: custom_datasets/data.yaml
 imgsz: 640
 epochs: 50
 batch: 16
 device: null
 seed: 42
 project: runs/benchmarks
-name: coco128
+name: custom_datasets
 models:
   - yolov8n.pt
   - yolo11n.pt
