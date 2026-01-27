@@ -1,10 +1,9 @@
-dataset: /workspace/data/agri-human-dataset-yolo/data.yaml
+dataset: coco128.yaml
 imgsz: 640
 epochs: 50
 batch: 16
 device: 0
 seed: 42
-eval_split: test
 project: runs/benchmarks
 name: agri-human-detection
 models:
