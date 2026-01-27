@@ -1,0 +1,64 @@
+[
+  {
+    "model": "yolov8s.pt",
+    "train_time_sec": 2410.13,
+    "eval_split": "test",
+    "map50": 0.9883180340766251,
+    "map50_95": 0.8702326690516925,
+    "precision": 0.9875584878339418,
+    "recall": 0.974794019249554,
+    "f1": 0.981134739171202,
+    "per_class_ap50_95": {
+      "person": 0.8702326690516925
+    },
+    "per_class_ap50": {
+      "person": 0.9883180340766251
+    },
+    "per_class_precision": {
+      "person": 0.9875584878339418
+    },
+    "per_class_recall": {
+      "person": 0.974794019249554
+    },
+    "per_class_f1": {
+      "person": 0.981134739171202
+    },
+    "epochs": 50,
+    "imgsz": 640,
+    "batch": 16,
+    "dataset": "/workspace/data/agri-human-dataset-yolo/data.yaml",
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s/test"
+  },
+  {
+    "model": "yolo11s.pt",
+    "train_time_sec": 2730.78,
+    "eval_split": "test",
+    "map50": 0.9906218759141499,
+    "map50_95": 0.8635921652441694,
+    "precision": 0.9904863858796927,
+    "recall": 0.9741523342269828,
+    "f1": 0.9822514592121646,
+    "per_class_ap50_95": {
+      "person": 0.8635921652441694
+    },
+    "per_class_ap50": {
+      "person": 0.9906218759141499
+    },
+    "per_class_precision": {
+      "person": 0.9904863858796927
+    },
+    "per_class_recall": {
+      "person": 0.9741523342269828
+    },
+    "per_class_f1": {
+      "person": 0.9822514592121646
+    },
+    "epochs": 50,
+    "imgsz": 640,
+    "batch": 16,
+    "dataset": "/workspace/data/agri-human-dataset-yolo/data.yaml",
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s/test"
+  }
+]
