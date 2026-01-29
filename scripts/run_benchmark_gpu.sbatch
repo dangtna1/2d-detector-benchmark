@@ -53,5 +53,5 @@ export RANK=-1
 export LOCAL_RANK=-1
 export WORLD_SIZE=1
 
-python benchmarks/run_benchmark.py --config configs/benchmark.yaml
+python benchmarks/run_benchmark.py --config configs/fisheye_benchmark.yaml --out runs/benchmarks/summary_fisheye.csv
 '
