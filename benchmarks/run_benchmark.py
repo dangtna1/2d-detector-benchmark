@@ -71,9 +71,15 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
             return None
         return {names[i]: values[i] for i in range(len(values)) if i in names}
 
+    speed = getattr(eval_results, "speed", None) or {}
+    inf_time_per_frame_ms = speed.get("inference")
+
     metrics = {
         "model": model_name,
         "train_time_sec": round(train_time, 2),
+        "inf_time_per_frame_ms": None
+        if inf_time_per_frame_ms is None
+        else round(float(inf_time_per_frame_ms), 3),
         "eval_split": eval_split,
         "map50": float(box.map50),
         "map50_95": float(box.map),
