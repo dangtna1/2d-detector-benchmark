@@ -1,7 +1,8 @@
 [
   {
     "model": "yolov8s.pt",
-    "train_time_sec": 4406.74,
+    "train_time_sec": 4301.97,
+    "inf_time_per_frame_ms": 1.31,
     "eval_split": "test",
     "map50": 0.9909767669044177,
     "map50_95": 0.8603319538462519,
@@ -27,12 +28,13 @@
     "imgsz": 640,
     "batch": 16,
     "dataset": "/workspace/data/zedrgb-dataset/data.yaml",
-    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s26",
-    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s/test6"
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s5",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s/test"
   },
   {
     "model": "yolo11s.pt",
-    "train_time_sec": 4996.24,
+    "train_time_sec": 4901.31,
+    "inf_time_per_frame_ms": 1.306,
     "eval_split": "test",
     "map50": 0.9868406516605376,
     "map50_95": 0.8646216911109372,
@@ -58,7 +60,7 @@
     "imgsz": 640,
     "batch": 16,
     "dataset": "/workspace/data/zedrgb-dataset/data.yaml",
-    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s8",
-    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s/test5"
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s2",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s/test"
   }
 ]

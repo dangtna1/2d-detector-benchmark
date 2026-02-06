@@ -1,7 +1,8 @@
 [
   {
     "model": "yolov8s.pt",
-    "train_time_sec": 103.0,
+    "train_time_sec": 99.37,
+    "inf_time_per_frame_ms": 4.748,
     "eval_split": "val",
     "map50": 0.8222319175981627,
     "map50_95": 0.6491913386443074,
@@ -377,12 +378,13 @@
     "imgsz": 640,
     "batch": 16,
     "dataset": "coco128.yaml",
-    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s25",
-    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s/val3"
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s4",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolov8s/val"
   },
   {
     "model": "yolo11s.pt",
-    "train_time_sec": 125.26,
+    "train_time_sec": 118.63,
+    "inf_time_per_frame_ms": 4.089,
     "eval_split": "val",
     "map50": 0.8428868397469861,
     "map50_95": 0.65957119988803,
@@ -758,7 +760,7 @@
     "imgsz": 640,
     "batch": 16,
     "dataset": "coco128.yaml",
-    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s7",
-    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s/val3"
+    "train_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s",
+    "eval_results_dir": "/workspace/repo/2d-detector-benchmark/runs/detect/runs/benchmarks/agri-human-detection/yolo11s/val"
   }
 ]
