@@ -13,6 +13,70 @@ def load_config(path: Path) -> dict:
         return yaml.safe_load(f)
 
 
+def _to_float(value):
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _get_eval_arg(eval_results, name, default=None):
+    args = getattr(eval_results, "args", None)
+    if args is None:
+        return default
+    return getattr(args, name, default)
+
+
+def benchmark_fixed_input(model: YOLO, imgsz, iters: int, warmup: int) -> dict:
+    try:
+        import torch
+    except Exception:
+        return {"fixed_input_inference_ms": None}
+
+    iters = max(int(iters), 0)
+    warmup = max(int(warmup), 0)
+    if iters == 0:
+        return {"fixed_input_inference_ms": None}
+
+    model_t = model.model
+    device = next(model_t.parameters()).device
+    dtype = next(model_t.parameters()).dtype
+
+    if isinstance(imgsz, (list, tuple)):
+        if len(imgsz) >= 2:
+            h, w = int(imgsz[0]), int(imgsz[1])
+        else:
+            h = w = int(imgsz[0])
+    else:
+        h = w = int(imgsz)
+
+    x = torch.zeros((1, 3, h, w), device=device, dtype=dtype)
+
+    model_t.eval()
+    with torch.inference_mode():
+        for _ in range(warmup):
+            _ = model_t(x)
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+        start = time.time()
+        for _ in range(iters):
+            _ = model_t(x)
+        if device.type == "cuda":
+            torch.cuda.synchronize(device)
+
+    ms = (time.time() - start) * 1000.0 / iters
+    return {
+        "fixed_input_inference_ms": round(ms, 3),
+        "fixed_input_shape": f"{h}x{w}",
+        "fixed_input_dtype": str(dtype),
+        "fixed_input_device": str(device),
+        "fixed_input_iters": iters,
+        "fixed_input_warmup": warmup,
+    }
+
+
 def train_and_eval(model_name: str, cfg: dict) -> dict:
     model = YOLO(model_name)
     start = time.time()
@@ -30,6 +94,11 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
     train_time = time.time() - start
 
     eval_split = cfg.get("eval_split", "val")
+    rect = cfg.get("rect", False)
+    half = cfg.get("half", False)
+    dnn = cfg.get("dnn", False)
+    workers = cfg.get("workers", 8)
+
     eval_results = model.val(
         data=cfg["dataset"],
         imgsz=cfg["imgsz"],
@@ -39,6 +108,10 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
         project=cfg["project"],
         name=f'{cfg["name"]}/{Path(model_name).stem}/{eval_split}',
         verbose=True,
+        rect=rect,
+        half=half,
+        dnn=dnn,
+        workers=workers,
     )
 
     box = eval_results.box
@@ -55,6 +128,7 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
             return None
 
     names = eval_results.names or {}
+    num_classes = len(names) if names else None
     ap = to_list(getattr(box, "ap", None))
     ap50 = to_list(getattr(box, "ap50", None))
     per_class_p = to_list(getattr(box, "p", None))
@@ -72,15 +146,30 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
         return {names[i]: values[i] for i in range(len(values)) if i in names}
 
     speed = getattr(eval_results, "speed", None) or {}
-    inf_time_per_frame_ms = speed.get("inference")
+    pre_time = _to_float(speed.get("preprocess"))
+    inf_time = _to_float(speed.get("inference"))
+    post_time = _to_float(speed.get("postprocess"))
+    total_time = None
+    if pre_time is not None and inf_time is not None and post_time is not None:
+        total_time = pre_time + inf_time + post_time
+
+    eval_imgsz = _get_eval_arg(eval_results, "imgsz", cfg["imgsz"])
+    eval_batch = _get_eval_arg(eval_results, "batch", cfg["batch"])
+    eval_rect = _get_eval_arg(eval_results, "rect", rect)
+    eval_half = _get_eval_arg(eval_results, "half", half)
+    eval_workers = _get_eval_arg(eval_results, "workers", workers)
+    eval_device = _get_eval_arg(eval_results, "device", cfg.get("device"))
+    eval_dnn = _get_eval_arg(eval_results, "dnn", dnn)
 
     metrics = {
         "model": model_name,
         "train_time_sec": round(train_time, 2),
-        "inf_time_per_frame_ms": None
-        if inf_time_per_frame_ms is None
-        else round(float(inf_time_per_frame_ms), 3),
+        "inf_time_per_frame_ms": None if inf_time is None else round(inf_time, 3),
+        "preprocess_time_per_frame_ms": None if pre_time is None else round(pre_time, 3),
+        "postprocess_time_per_frame_ms": None if post_time is None else round(post_time, 3),
+        "total_time_per_frame_ms": None if total_time is None else round(total_time, 3),
         "eval_split": eval_split,
+        "num_classes": num_classes,
         "map50": float(box.map50),
         "map50_95": float(box.map),
         "precision": float(box.mp),
@@ -91,11 +180,29 @@ def train_and_eval(model_name: str, cfg: dict) -> dict:
         "per_class_precision": by_name(per_class_p),
         "per_class_recall": by_name(per_class_r),
         "per_class_f1": by_name(per_class_f1),
+        "eval_imgsz": eval_imgsz,
+        "eval_batch": eval_batch,
+        "eval_rect": eval_rect,
+        "eval_half": eval_half,
+        "eval_workers": eval_workers,
+        "eval_device": eval_device,
+        "eval_dnn": eval_dnn,
         "epochs": cfg["epochs"],
         "imgsz": cfg["imgsz"],
         "batch": cfg["batch"],
         "dataset": cfg["dataset"],
+        "config_device": cfg.get("device"),
     }
+
+    if cfg.get("benchmark_fixed_input", False):
+        bench = benchmark_fixed_input(
+            model,
+            cfg["imgsz"],
+            cfg.get("benchmark_iters", 200),
+            cfg.get("benchmark_warmup", 20),
+        )
+        metrics.update(bench)
+
     metrics["train_results_dir"] = str(train_results.save_dir)
     metrics["eval_results_dir"] = str(eval_results.save_dir)
     return metrics

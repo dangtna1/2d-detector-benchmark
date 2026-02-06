@@ -5,6 +5,13 @@ batch: 16
 device: 0
 seed: 42
 eval_split: test
+rect: false
+half: false
+dnn: false
+workers: 8
+benchmark_fixed_input: true
+benchmark_warmup: 20
+benchmark_iters: 200
 project: runs/benchmarks
 name: agri-human-detection
 models:
